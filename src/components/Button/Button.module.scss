@@ -1,0 +1,33 @@
+@layer button, flex;
+
+@layer button {
+  .content {
+    transition: opacity 0.2s ease-in-out;
+    background-color: var(--content-color);
+  }
+
+  .content:hover {
+    background-color: var(--content-color-hover);
+    cursor: pointer;
+  }
+
+  .content:active {
+    background-color: var(--content-color-active);
+  }
+
+  .content.selected {
+    background-color: var(
+      --content-color-active
+    ); /* Ensure the active color stays */
+  }
+
+  /* Full-size wrapper to ensure background covers everything */
+  .inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: inherit; // Ensures buttonPadding is applied correctly
+  }
+}

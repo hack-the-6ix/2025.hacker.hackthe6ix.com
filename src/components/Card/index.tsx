@@ -1,31 +1,122 @@
-import { ComponentPropsWithRef } from "react";
-import { forwardRef } from "react";
+import { ElementType, PolyComponentPropsWithRef } from 'react';
+import cn from 'classnames';
+import { Color } from '@/styles';
+import { getClipPath } from '@/styles/pixel';
+import Flex from '../Flex';
+import styles from './Card.module.scss';
 
-export interface ButtonProps extends ComponentPropsWithRef<"button"> {
-  size: "small" | "medium" | "large" | "icon";
-}
-
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ size, className, children, ...props }, ref) => {
-    const sizeClasses = {
-      small: "px-3 py-1 text-sm",
-      medium: "px-4 py-2 text-md",
-      large: "px-5 py-3 text-lg",
-      icon: "p-2",
-    };
-
-    return (
-      <button
-        ref={ref}
-        className={`rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
-          ${sizeClasses[size]} 
-          ${className}`}
-        {...props}
-      >
-        {children}
-      </button>
-    );
+export type CardProps<T extends ElementType> = PolyComponentPropsWithRef<
+  T,
+  {
+    // For doing the pixel stuff
+    pixelSize?: number;
+    radius?: number;
+    borderWidth?: number;
+    borderColor?: Color;
+    padding?: number;
+    backgroundColor?: string;
+    borderLeftColor?: Color;
+    borderRightColor?: Color;
+    borderTopColor?: Color;
+    borderBottomColor?: Color;
+    onHover?: string;
+    verticalPaddingPercentageMultiplier?: PaddingPercentageMultiplier;
+    horizontalPaddingPercentageMultiplier?: PaddingPercentageMultiplier;
   }
-);
+>;
 
-Button.displayName = "Button";
+export type PaddingPercentageMultiplier = 0 | 50 | 100;
+
+export default function Card<T extends ElementType = 'div'>({
+  pixelSize = 4,
+  borderWidth = 1,
+  radius = 1,
+  borderColor,
+  padding = 4,
+  backgroundColor = '#fff',
+  borderLeftColor,
+  borderRightColor,
+  borderTopColor,
+  borderBottomColor,
+  verticalPaddingPercentageMultiplier = 100,
+  horizontalPaddingPercentageMultiplier = 100,
+  children,
+  as,
+  ...props
+}: CardProps<T>) {
+  const outerClipPath = getClipPath(radius, pixelSize);
+  const innerClipPath = getClipPath(
+    radius - borderWidth,
+    pixelSize,
+    borderWidth,
+  );
+  return (
+    <Flex
+      {...props}
+      className={cn(props.className, styles.card)}
+      as={as as 'div'}
+      align="center"
+      justify="center"
+      inline
+      style={{
+        ...props.style,
+        '--card-outer': outerClipPath,
+        '--card-inner': innerClipPath,
+        '--card-offset': borderWidth * pixelSize + padding,
+        backgroundColor: borderColor ? `var(--${borderColor})` : undefined,
+      }}
+    >
+      <div
+        className={styles.borderTop}
+        style={{
+          backgroundColor:
+            borderTopColor ? `var(--${borderTopColor})` : undefined,
+        }}
+      />
+      <div
+        className={styles.borderRight}
+        style={{
+          backgroundColor:
+            borderRightColor ? `var(--${borderRightColor})` : undefined,
+        }}
+      />
+      <div
+        className={styles.borderBottom}
+        style={{
+          backgroundColor:
+            borderBottomColor ? `var(--${borderBottomColor})` : undefined,
+        }}
+      />
+      <div
+        className={styles.borderLeft}
+        style={{
+          backgroundColor:
+            borderLeftColor ? `var(--${borderLeftColor})` : undefined,
+        }}
+      />
+
+      <div
+        className={cn(
+          props.className,
+          styles.content,
+          styles[`vppm--${verticalPaddingPercentageMultiplier}`],
+          styles[`hppm--${horizontalPaddingPercentageMultiplier}`],
+        )}
+        style={{ '--card-inner-color': backgroundColor } as React.CSSProperties}
+      >
+        <div
+          className={cn(
+            styles.content,
+            styles[`vppm--${verticalPaddingPercentageMultiplier}`],
+            styles[`hppm--${horizontalPaddingPercentageMultiplier}`],
+          )}
+          style={
+            { '--card-inner-color': backgroundColor } as React.CSSProperties
+          }
+        >
+          {children}
+        </div>
+      </div>
+    </Flex>
+  );
+}
