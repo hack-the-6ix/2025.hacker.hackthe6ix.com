@@ -13,16 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <nav className="p-4 bg-gray-100">
-          <a href="/about-you" className="mr-4">About You</a>
-          <a href="/experiences" className="mr-4">Experiences</a>
-          <a href="/long-answer" className="mr-4">Long Answer</a>
-          <a href="/survey" className="mr-4">Survey</a>
-          <a href="/review">Review</a>
-        </nav>
-        <main>{children}</main>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
